@@ -1,0 +1,10 @@
+POST http://localhost:3000/jobs
+Content-Type: application/json
+
+{
+  "name": "New Job",
+  "cron": "*/3 * * * * *",
+  "dockerImagePath": "/"
+}
+
+
