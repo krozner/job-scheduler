@@ -18,6 +18,10 @@ node_modules/
 # Output files
 dist
 
+# other folders
+var/data.db
+tmp
+
 # dotenv environment variables file
 .env
 serverless-qa-service-account.json
