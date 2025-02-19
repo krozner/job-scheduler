@@ -2,7 +2,6 @@
 .github
 .vscode
 coverage
-azure-pipelines.yml
 *.md
 .prettierrc
 nodemon*.json

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+case "$1" in
+  "dev"| "start:dev")
+    docker exec -it job-scheduler bash -c "npm run start:dev"
+  ;;
+*)
+  if [[ ! "$1" ]]; then
+    docker exec -it job-scheduler bash
+  else
+    echo "$(tput setaf 1)Invalid bash command: $1$(tput sgr0)"
+  fi
+;;
+esac

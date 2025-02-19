@@ -2,12 +2,10 @@ version: "3.8"
 
 services:
   app:
-    image: "node:22-slim"
     container_name: job-scheduler
     build:
       context: .
       dockerfile: Dockerfile
-    #user: "node"
     working_dir: /usr/src/app
     environment:
       - NODE_ENV=dev
@@ -21,4 +19,4 @@ services:
     tty: true
     #command: node --inspect=0.0.0.0:9229 dist/main.js
     #command: "npm start"
-  
+
