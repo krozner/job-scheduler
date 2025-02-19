@@ -5,49 +5,53 @@ import { cronbee } from 'cronbee';
 
 @Injectable()
 export class JobSchedulerService {
-  constructor(private repository: JobRepository) {}
+    constructor(private repository: JobRepository) {}
 
-  async scheduleJob(job: JobEntity): Promise<void> {
-    await cronbee.ensure({
-      taskName: job.identity,
-      taskRun: `sleep 5`,
-      workingDirectory: '/app/var',
-      cron: job.cron,
-    });
-  }
+    async scheduleJob(job: JobEntity): Promise<void> {
+        await cronbee.ensure({
+            taskName: job.identity,
+            taskRun: `sleep 5`,
+            workingDirectory: '/app/var',
+            cron: job.cron,
+        });
+    }
 
-  async stopJob(job: JobEntity): Promise<void> {
-    await cronbee.remove({ taskName: job.identity });
-  }
+    async startJob(job: JobEntity): Promise<void> {
+        await this.scheduleJob(job); // has the same interface as needed for job creation, but i wantend to keep separate interface for JobSchedulerService
+    }
 
-  /*
-  i have checkin other library for running cron jobs, but this runs nodejs process instaead - no crontab
-  now i am testing cronbee
+    async stopJob(job: JobEntity): Promise<void> {
+        await cronbee.remove({ taskName: job.identity });
+    }
 
-  nodeCron(job: JobEntity) {
-    const cron = new CronJob(
-      job.cron,
-      async () => {
-        console.log('Cron job ID:' + job.id + ' ' + new Date().getTime());
+    /*
+    i have checkin other library for running cron jobs, but this runs nodejs process instaead - no crontab
+    now i am testing cronbee
 
-        cron.onComplete();
-      },
-      () => {
-        const stop = (entity: JobEntity) => {
-          if (entity instanceof JobEntity && entity.isEnabled) {
-            return; // stops it only if not exist or is disabled
-          }
-          console.log(
-            'Job stopped ID:' + entity.id + ' ' + new Date().getTime(),
-          );
-          cron.stop();
-          cron.onComplete = null;
-        };
+    nodeCron(job: JobEntity) {
+      const cron = new CronJob(
+        job.cron,
+        async () => {
+          console.log('Cron job ID:' + job.id + ' ' + new Date().getTime());
 
-        this.repository.findJob(job.id).then(stop).catch(stop);
-      },
-    );
+          cron.onComplete();
+        },
+        () => {
+          const stop = (entity: JobEntity) => {
+            if (entity instanceof JobEntity && entity.isEnabled) {
+              return; // stops it only if not exist or is disabled
+            }
+            console.log(
+              'Job stopped ID:' + entity.id + ' ' + new Date().getTime(),
+            );
+            cron.stop();
+            cron.onComplete = null;
+          };
 
-    cron.start();
-  }*/
+          this.repository.findJob(job.id).then(stop).catch(stop);
+        },
+      );
+
+      cron.start();
+    }*/
 }
