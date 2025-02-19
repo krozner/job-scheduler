@@ -1,16 +1,20 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
+import { IJobEnvVariable } from '../entities/job.entity';
 
 export class JobDto {
-  @IsNotEmpty()
-  name: string;
+    @IsNotEmpty()
+    name: string;
 
-  @IsNotEmpty()
-  dockerImagePath: string;
-  /**
-   * CRON string (for scheduling)
-   */
-  @IsNotEmpty()
-  cron: string;
+    /**
+     * CRON string (for scheduling)
+     */
+    @IsNotEmpty()
+    cron: string;
 
-  environmentVariables: Array<{ name: string; value: unknown }>;
+    @IsNotEmpty()
+    dockerImagePath: string;
+
+    @IsOptional()
+    @IsArray()
+    envVariables?: IJobEnvVariable[];
 }

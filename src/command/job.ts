@@ -1,8 +1,8 @@
 import { CommandFactory } from 'nest-commander';
-import { JobModule } from '../job.module';
+import { JobCommandModule } from './job.command..module';
 
 async function bootstrap() {
-  await CommandFactory.run(JobModule);
+    await CommandFactory.run(JobCommandModule);
 }
 
 bootstrap();

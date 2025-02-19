@@ -9,9 +9,9 @@ RUN touch /var/log/cron.log
 # Run the command on container startup
 CMD cron && tail -f /var/log/cron.log
 # linux utils (used in bin/cron helper script)
-RUN apt-get install bsdmainutils
+RUN apt-get -y install bsdmainutils
 
-USER node
+#USER node
 # Set necessary environment variables.
 ENV NODE_ENV=dev \
     NPM_CONFIG_PREFIX=/home/node/.npm-global \
