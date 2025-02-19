@@ -1,13 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { JobEntity } from './entities/job.entity';
-import { CronJob } from 'cron';
 import { JobRepository } from './job.repository';
+import { cronbee } from 'cronbee';
 
 @Injectable()
 export class JobSchedulerService {
   constructor(private repository: JobRepository) {}
 
-  scheduleJob(job: JobEntity) {
+  async scheduleJob(job: JobEntity): Promise<void> {
+    await cronbee.ensure({
+      taskName: job.name,
+      taskRun: `sleep 5`,
+      workingDirectory: '/app/var',
+      cron: job.cron,
+    });
+  }
+
+  /*
+  i have checkin other library for running cron jobs, but this runs nodejs process instaead - no crontab
+  now i am testing cronbee
+
+  nodeCron(job: JobEntity) {
     const cron = new CronJob(
       job.cron,
       async () => {
@@ -32,5 +45,5 @@ export class JobSchedulerService {
     );
 
     cron.start();
-  }
+  }*/
 }

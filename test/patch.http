@@ -1,6 +1,0 @@
-PATCH http://localhost:3000/jobs/29
-Content-Type: application/json
-
-{
-
-}

@@ -1,19 +1,21 @@
 FROM node:22-slim
 
-# Install cron
 USER root
+
+# Install cron
 RUN apt update && apt -y install cron
 # Create the log file
 RUN touch /var/log/cron.log
 # Run the command on container startup
 CMD cron && tail -f /var/log/cron.log
+# linux utils (used in bin/cron helper script)
+RUN apt-get install bsdmainutils
 
-
+USER node
 # Set necessary environment variables.
 ENV NODE_ENV=dev \
     NPM_CONFIG_PREFIX=/home/node/.npm-global \
     PATH=$PATH:/home/node/.npm-global/bin:/home/node/node_modules/.bin:$PATH
-
 
 # Create the working directory, including the node_modules folder for the sake of assigning ownership in the next command
 RUN mkdir -p /usr/src/app/node_modules

@@ -15,6 +15,7 @@ import { JobRepository } from './job.repository';
 import { Paginator } from './utils/paginator';
 import { JobEntity } from './entities/job.entity';
 import { Request } from 'express';
+import { cronbee } from 'cronbee';
 
 @Controller()
 export class JobController {
@@ -48,6 +49,12 @@ export class JobController {
         };
       }),
     };
+  }
+
+
+  @Get('/crontab')
+  async crontab(@Req() request: Request) {
+    return await cronbee.load();
   }
 
   @Patch('/jobs/:id')

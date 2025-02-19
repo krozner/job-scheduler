@@ -14,7 +14,7 @@ import { JobRepository } from './job.repository';
       entities: [
           JobEntity,
       ],
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true,
     }),
   ],
