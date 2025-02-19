@@ -60,6 +60,9 @@ export class JobController {
   @Patch('/jobs/:id')
   @HttpCode(204)
   async update(@Param('id') id: number) {
-    await this.jobRepository.toggleStatus(id);
+    const job = await this.jobRepository.toggleStatus(id);
+    if (job && !job.isEnabled) {
+      this.jobScheduler.stopJob(job);
+    }
   }
 }

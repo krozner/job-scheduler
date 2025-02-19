@@ -9,11 +9,15 @@ export class JobSchedulerService {
 
   async scheduleJob(job: JobEntity): Promise<void> {
     await cronbee.ensure({
-      taskName: job.name,
+      taskName: job.identity,
       taskRun: `sleep 5`,
       workingDirectory: '/app/var',
       cron: job.cron,
     });
+  }
+
+  async stopJob(job: JobEntity): Promise<void> {
+    await cronbee.remove({ taskName: job.identity });
   }
 
   /*

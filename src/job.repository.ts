@@ -31,11 +31,14 @@ export class JobRepository {
       .getMany();
   }
 
-  async toggleStatus(id: number): Promise<void> {
+  async toggleStatus(id: number): Promise<JobEntity> {
     const job = await this.findJob(id);
     if (job instanceof JobEntity) {
       job.isEnabled = !job.isEnabled;
       await this.entityManager.save(job);
+
+      return job;
     }
+    return null;
   }
 }
