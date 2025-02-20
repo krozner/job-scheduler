@@ -39,7 +39,7 @@ export class JobController {
     @Get('/jobs')
     async fetch(@Req() request: Request) {
         const collection = await this.jobRepository.fetch(
-            new Paginator(request),
+            new Paginator<JobEntity>(request),
         );
 
         return {

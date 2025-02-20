@@ -22,7 +22,7 @@ export class JobRepository {
     return this.entityManager.findOneBy(JobEntity, { id });
   }
 
-  fetch(paginator: Paginator): Promise<JobEntity[]> {
+  fetch(paginator: Paginator<JobEntity>): Promise<JobEntity[]> {
     return this.entityManager
       .getRepository(JobEntity)
       .createQueryBuilder()

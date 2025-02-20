@@ -20,7 +20,6 @@ export class JobEntity {
     private envVariablesSerialized?: string; // sqlite doesn't allow to store array so value for env variables is serialized to json
 
     set envVariables(vars: IJobEnvVariable[]) {
-        console.log('set', vars);
         this.envVariablesSerialized = JSON.stringify(vars);
     }
 
