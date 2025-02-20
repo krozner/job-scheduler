@@ -4,6 +4,7 @@ import { JobSchedulerService } from './job-scheduler.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobEntity } from './entities/job.entity';
 import { JobRepository } from './job.repository';
+import { JobExecutionEntity } from './entities/job-execution.entity';
 
 @Module({
     imports: [
@@ -11,7 +12,7 @@ import { JobRepository } from './job.repository';
         TypeOrmModule.forRoot({
             type: 'sqlite',
             database: 'var/data.db',
-            entities: [JobEntity],
+            entities: [JobEntity, JobExecutionEntity],
             synchronize: true,
             autoLoadEntities: true,
         }),
