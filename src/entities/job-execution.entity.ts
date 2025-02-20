@@ -3,6 +3,9 @@ import { JobEntity } from './job.entity';
 
 @Entity({ name: 'job_execution' })
 export class JobExecutionEntity {
+    @ManyToOne(() => JobEntity, (job) => job.executions)
+    job: JobEntity;
+
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -12,12 +15,6 @@ export class JobExecutionEntity {
     @Column({ nullable: true })
     finishedAt?: Date;
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     exitCode?: number;
-
-    @ManyToOne(() => JobEntity, (job) => job.executions)
-    job: JobEntity;
-
-    @Column({ nullable: true})
-    data?: string;
 }

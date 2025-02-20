@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { JobCommand } from './job.command';
 import { JobModule } from '../job.module';
+import { ExecuteJobCommand } from './execute-job.command';
+import { UpdateJobCommand } from './update-job.command';
 
 @Module({
-    imports: [JobCommand, JobModule],
+    imports: [JobModule, ExecuteJobCommand, UpdateJobCommand],
 })
 export class JobCommandModule {}

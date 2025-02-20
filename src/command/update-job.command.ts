@@ -1,0 +1,53 @@
+import { Command, CommandRunner } from 'nest-commander';
+import * as process from 'process';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { JobExecutionEntity } from '../entities/job-execution.entity';
+
+@Command({
+    name: 'UpdateJob',
+})
+export class UpdateJobCommand extends CommandRunner {
+    @InjectEntityManager()
+    private entityManager: EntityManager;
+
+    async run(): Promise<void> {
+        const startedAt = new Date();
+        console.log('Updating job command...');
+
+        let id = null;
+        let exitCode = null;
+        let finishedAt = null;
+
+        for (const [key, value] of Object.entries(process.env)) {
+            if (key === 'JOB_EXECUTION_ID') {
+                id = value;
+                break;
+            }
+            if (key === 'JOB_EXECUTION_EXIT_CODE') {
+                exitCode = value;
+                break;
+            }
+            if (key === 'JOB_EXECUTION_FINISHED_AT') {
+                finishedAt = value;
+                break;
+            }
+            // any other variables for running module would be here
+        }
+
+        if (id !== null) {
+            const execution = await this.entityManager
+                .getRepository(JobExecutionEntity)
+                .findOneBy({ id });
+
+            execution.finishedAt = new Date(finishedAt);
+            execution.exitCode = exitCode;
+
+            await this.entityManager.save(execution);
+        }
+
+        // added this just to see some results if its working
+        const endedAt = new Date().getTime() - startedAt.getTime();
+        console.log('Command finished. Time: ' + String(endedAt) + 'ms');
+    }
+}
