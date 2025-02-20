@@ -4,17 +4,13 @@
 - Framework: [Nest Js](https://github.com/nestjs/nest) 
 - Database: SQLite
 
-## Installation
-
-```bash
-$ docker-compose up -d
-```
 Ensure also that [Docker is installed](https://docs.docker.com/engine/install) on your work station
 
-## Running the app using docker
+## Instalation and Running the app using docker
 
 ```bash
 # development
+$ docker-compose up -d
 $ docker exec -it job-scheduler bash
 $ npm i
 $ npm run start:dev
