@@ -12,6 +12,7 @@ export class JobRepository {
 
   async createJob(data: JobDto): Promise<JobEntity> {
     const entity = this.entityManager.create(JobEntity, data);
+    entity.envVariables = data.envVariables;
     await this.entityManager.save(entity);
 
     return entity;

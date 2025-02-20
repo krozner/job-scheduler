@@ -6,20 +6,18 @@ import { JobEntity } from './entities/job.entity';
 import { JobRepository } from './job.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([JobEntity]),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'var/data.db',
-      entities: [
-          JobEntity,
-      ],
-      synchronize: true,
-      autoLoadEntities: true,
-    }),
-  ],
-  controllers: [JobController],
-  providers: [JobSchedulerService, JobRepository],
-  exports: [JobSchedulerService],
+    imports: [
+        TypeOrmModule.forFeature([JobEntity]),
+        TypeOrmModule.forRoot({
+            type: 'sqlite',
+            database: 'var/data.db',
+            entities: [JobEntity],
+            synchronize: true,
+            autoLoadEntities: true,
+        }),
+    ],
+    controllers: [JobController],
+    providers: [JobSchedulerService, JobRepository],
+    exports: [JobRepository],
 })
 export class JobModule {}

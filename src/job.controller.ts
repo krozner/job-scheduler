@@ -53,19 +53,19 @@ export class JobController {
         };
     }
 
-    @Get('/crontab')
-    async crontab(@Req() request: Request) {
-        return await cronbee.load();
-    }
-
     @Patch('/jobs/:id')
     @HttpCode(204)
     async update(@Param('id') id: number) {
         const job = await this.jobRepository.toggleStatus(id);
         if (job instanceof JobEntity) {
             job.isEnabled
-                ? this.jobScheduler.startJob(job)
-                : this.jobScheduler.stopJob(job);
+                ? await this.jobScheduler.startJob(job)
+                : await this.jobScheduler.stopJob(job);
         }
+    }
+
+    @Get('/crontab')
+    async crontab(@Req() request: Request) {
+        return await cronbee.load();
     }
 }
