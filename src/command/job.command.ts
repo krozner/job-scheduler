@@ -1,10 +1,11 @@
 import { Command, CommandRunner } from 'nest-commander';
-import { env } from 'process';
+import * as process from 'process';
 import { writeFileSync } from 'fs';
 import { JobRepository } from '../job.repository';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { JobEntity } from '../entities/job.entity';
+import { JobExecutionEntity } from '../entities/job-execution.entity';
 
 @Command({
     name: 'JobCommand',
@@ -19,13 +20,13 @@ export class JobCommand extends CommandRunner {
     // private jobRepository: JobRepository;
 
     async run(): Promise<void> {
-        const startAt = new Date();
+        const startedAt = new Date();
         console.log('Running job command...');
 
         let id = null;
         let sleep = null;
 
-        for (const [key, value] of Object.entries(env)) {
+        for (const [key, value] of Object.entries(process.env)) {
             if (key === 'JOB_ID') {
                 id = value;
                 break;
@@ -40,6 +41,17 @@ export class JobCommand extends CommandRunner {
                 .getRepository(JobEntity)
                 .findOneBy({ id });
 
+            const execution = this.entityManager.create(JobExecutionEntity, {
+                job,
+                startedAt,
+            });
+            await this.entityManager.save(execution);
+
+            process.on('stdout', async (data) => {
+                execution.data = JSON.stringify(data);
+                await this.entityManager.save(execution);
+            });
+
             console.log('Job: ' + job.name);
         }
 
@@ -51,7 +63,7 @@ export class JobCommand extends CommandRunner {
         }
 
         // added this just to see some results if its working
-        const endsAt = new Date().getTime() - startAt.getTime();
+        const endsAt = new Date().getTime() - startedAt.getTime();
         console.log('Job command finished. Time: ' + String(endsAt) + 'ms');
     }
 }

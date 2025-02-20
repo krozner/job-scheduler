@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { JobExecutionEntity } from './job-execution.entity';
 
 export interface IJobEnvVariable {
     name: string;
@@ -39,4 +40,7 @@ export class JobEntity {
     get identity(): string {
         return 'Job_' + this.id;
     }
+
+    @OneToMany(() => JobExecutionEntity, (execution) => execution.job)
+    executions: JobExecutionEntity[];
 }
