@@ -4,7 +4,7 @@ type IOrderBy<T> = {
     [K in keyof T]?: 'ASC' | 'DESC';
 };
 
-export class Paginator<T extends { id: unknown }> {
+export class Paginator<T> {
     static LIMIT = Number.MAX_SAFE_INTEGER;
 
     constructor(private request: Request) {}
@@ -25,7 +25,7 @@ export class Paginator<T extends { id: unknown }> {
         return Number(limit ?? Paginator.LIMIT);
     }
 
-    get orderBy(): IOrderBy<T> {
+    get orderBy(): IOrderBy<T> | { id: 'DESC' } {
         return { id: 'DESC' };
     }
 }
