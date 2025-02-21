@@ -47,7 +47,7 @@ export class ExecuteJobCommand extends CommandRunner {
         process.on('exit', (exitCode) => {
             const cmd = '/usr/local/bin/node /usr/src/app/dist/src/commands/job.js UpdateJob'; // Important: run npm build to use it
             const vars = [
-                'JOB_ID' + job?.id,
+                'JOB_ID=' + job?.id,
                 'JOB_EXECUTION_ID=' + execution?.id,
                 'JOB_EXECUTION_EXIT_CODE=' + exitCode,
                 'JOB_EXECUTION_FINISHED_AT=' + new Date().getTime(),

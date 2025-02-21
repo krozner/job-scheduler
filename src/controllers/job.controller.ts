@@ -17,13 +17,15 @@ import { Paginator } from '../utils/paginator';
 import { JobEntity } from '../entities/job.entity';
 import { Request } from 'express';
 import { cronbee } from 'cronbee';
-import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { JobStatusDto } from '../dto/job-status.dto';
+import { ListView } from './views/list.view';
 
 @Controller()
 export class JobController {
     constructor(private readonly jobScheduler: JobSchedulerService, private readonly jobRepository: JobRepository) {}
 
+    @ApiOperation({ summary: 'Create Job' })
     @Post('/jobs')
     @HttpCode(201)
     async createJob(@Body() job: JobDto) {
@@ -36,6 +38,8 @@ export class JobController {
         };
     }
 
+    @ApiOperation({ summary: 'List of jobs' })
+    @ApiResponse({ type: ListView })
     @UseInterceptors(ClassSerializerInterceptor)
     @Get('/jobs')
     async fetch(@Req() request: Request) {
@@ -59,6 +63,8 @@ export class JobController {
         }
     }
 
+    @ApiOperation({ summary: 'List of jobs execution (finished & in progress)' })
+    @ApiResponse({ type: ListView })
     @UseInterceptors(ClassSerializerInterceptor)
     @Get('/jobs/executions')
     async executions(@Req() request: Request) {
@@ -71,8 +77,9 @@ export class JobController {
         };
     }
 
+    @ApiOperation({ summary: 'Extra endpoint to see raw crontab' })
     @Get('/crontab')
-    async crontab(@Req() request: Request) {
+    async crontab() {
         return await cronbee.load();
     }
 }
