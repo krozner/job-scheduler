@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { JobEntity } from './job.entity';
+import { Expose } from 'class-transformer';
 
 @Entity({ name: 'job_execution' })
 export class JobExecutionEntity {
@@ -17,4 +18,12 @@ export class JobExecutionEntity {
 
     @Column({ nullable: true })
     exitCode?: number;
+
+    @Expose({ name: 'executionTime' })
+    getExecutionTime(): number {
+        if (!this.finishedAt) {
+            return undefined;
+        }
+        return this.finishedAt.getTime() - this.startedAt.getTime();
+    }
 }

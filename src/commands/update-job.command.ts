@@ -13,7 +13,7 @@ export class UpdateJobCommand extends CommandRunner {
 
     async run(): Promise<void> {
         const startedAt = new Date();
-        console.log('Updating job command...');
+        console.log('Updating job commands...');
 
         let id = null;
         let exitCode = null;
@@ -22,30 +22,26 @@ export class UpdateJobCommand extends CommandRunner {
         for (const [key, value] of Object.entries(process.env)) {
             if (key === 'JOB_EXECUTION_ID') {
                 id = value;
-                break;
             }
             if (key === 'JOB_EXECUTION_EXIT_CODE') {
                 exitCode = value;
-                break;
             }
             if (key === 'JOB_EXECUTION_FINISHED_AT') {
-                finishedAt = value;
-                break;
+                finishedAt = new Date(Number(value));
             }
             // any other variables for running module would be here
         }
 
         if (id !== null) {
-            const execution = await this.entityManager
-                .getRepository(JobExecutionEntity)
-                .findOneBy({ id });
+            const execution = await this.entityManager.getRepository(JobExecutionEntity).findOneBy({ id });
 
             execution.finishedAt = new Date(finishedAt);
             execution.exitCode = exitCode;
 
             await this.entityManager.save(execution);
+        } else {
+            throw new Error('Job not found!\n');
         }
-
         // added this just to see some results if its working
         const endedAt = new Date().getTime() - startedAt.getTime();
         console.log('Command finished. Time: ' + String(endedAt) + 'ms');

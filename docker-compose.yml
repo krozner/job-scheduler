@@ -17,6 +17,6 @@ services:
       - 3000:3000
       - 9229:9229
     tty: true
-    #command: node --inspect=0.0.0.0:9229 dist/main.js
-    #command: "npm start"
+    #commands: node --inspect=0.0.0.0:9229 dist/main.js
+    #commands: "npm start"
 

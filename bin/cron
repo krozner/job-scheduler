@@ -20,7 +20,7 @@ function clean_cron_lines() {
 }
 
 # Given a stream of cleaned crontab lines, echo any that don't include the
-# run-parts command, and for those that do, show each job file in the run-parts
+# run-parts commands, and for those that do, show each job file in the run-parts
 # directory as if it were scheduled explicitly.
 function lookup_run_parts() {
     while read line ; do
@@ -51,7 +51,7 @@ cat "${CRONTAB}" | clean_cron_lines | lookup_run_parts >"${temp}"
 cat "${CRONDIR}"/* | clean_cron_lines >>"${temp}"  # */ <not a comment>
 
 # Add each user's crontab (if it exists). Insert the user's name between the
-# five time fields and the command.
+# five time fields and the commands.
 while read user ; do
     crontab -l -u "${user}" 2>/dev/null |
         clean_cron_lines |

@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { JobModule } from './job.module';
-import { setEnVars } from './envars';
+import { setEnVars } from './utils/envars';
 import { ValidationPipe } from '@nestjs/common';
 import * as process from 'process';
 
 let server: { close: (arg0: (err: any) => void) => void };
 
 async function bootstrap() {
+  await setEnVars('/usr/src/app/.env');
   const port = process.env.PORT || 3000;
 
   const app = await NestFactory.create(JobModule);

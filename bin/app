@@ -2,8 +2,12 @@
 
 case "$1" in
   "dev"| "start:dev")
-    docker exec -it job-scheduler bash -c "npm run start:dev"
-  ;;
+     docker exec -it job-scheduler bash -c "npm run start:dev"
+   ;;
+  "reset")
+     # docker exec -it job-scheduler bash -c "crontab -r && npm run build && rm var/data.db"
+     clear && npm run build && rm -rf var/data.db && clear && ./bin/cron && crontab -r
+   ;;
 *)
   if [[ ! "$1" ]]; then
     docker exec -it job-scheduler bash
