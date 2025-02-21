@@ -3,8 +3,13 @@ import { EntityManager } from 'typeorm';
 import { JobEntity } from '../entities/job.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { JobDto } from '../dto/job.dto';
+import { JobStatusDto } from '../dto/job-status.dto';
 import { Paginator } from '../utils/paginator';
 import { JobExecutionEntity } from '../entities/job-execution.entity';
+
+type IJobStatusUpdate  = {
+    [key in JobStatusDto]?: boolean;
+};
 
 @Injectable()
 export class JobRepository {
@@ -33,12 +38,22 @@ export class JobRepository {
             .getMany();
     }
 
-    async toggleStatus(id: number): Promise<JobEntity> {
+    /**
+     * @param id
+     * @param options If disable|enable option is set it forces status change
+     */
+    async toggleStatus(id: number, options?: IJobStatusUpdate): Promise<JobEntity> {
         const job = await this.findJob(id);
         if (job instanceof JobEntity) {
-            job.isEnabled = !job.isEnabled;
-            await this.entityManager.save(job);
+            if (options?.disable) {
+                job.isEnabled = false;
+            } else if (options?.enable) {
+                job.isEnabled = true;
+            } else {
+                job.isEnabled = !job.isEnabled;
+            }
 
+            await this.entityManager.save(job);
             return job;
         }
         return null;
@@ -52,15 +67,13 @@ export class JobRepository {
             .getCount();
         paginator.setTotal(total);
 
-        return this.entityManager
-            .getRepository(JobEntity)
-            .find({
-                skip: paginator.offset,
-                take: paginator.limit,
-                order: paginator.orderBy,
-                relations: {
-                    executions: true,
-                },
-            });
+        return this.entityManager.getRepository(JobEntity).find({
+            skip: paginator.offset,
+            take: paginator.limit,
+            order: paginator.orderBy,
+            relations: {
+                executions: true,
+            },
+        });
     }
 }

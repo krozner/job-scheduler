@@ -4,7 +4,6 @@ import {
     Post,
     Body,
     Req,
-    Put,
     Patch,
     HttpCode,
     Param,
@@ -18,6 +17,8 @@ import { Paginator } from '../utils/paginator';
 import { JobEntity } from '../entities/job.entity';
 import { Request } from 'express';
 import { cronbee } from 'cronbee';
+import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { JobStatusDto } from '../dto/job-status.dto';
 
 @Controller()
 export class JobController {
@@ -47,10 +48,12 @@ export class JobController {
         };
     }
 
-    @Patch('/jobs/:id')
+    @ApiOperation({ summary: 'Change Job status. (Disable or Enable)' })
+    @ApiParam({ name: 'status', enum: JobStatusDto })
+    @Patch('/jobs/:id/:status')
     @HttpCode(204)
-    async update(@Param('id') id: number) {
-        const job = await this.jobRepository.toggleStatus(id);
+    async changeStatus(@Param('id') id: number, @Param('status') status: number) {
+        const job = await this.jobRepository.toggleStatus(id, { [status]: true });
         if (job instanceof JobEntity) {
             job.isEnabled ? await this.jobScheduler.startJob(job) : await this.jobScheduler.stopJob(job);
         }

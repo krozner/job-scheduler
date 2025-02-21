@@ -6,7 +6,7 @@ case "$1" in
    ;;
   "reset")
      # docker exec -it job-scheduler bash -c "crontab -r && npm run build && rm var/data.db"
-     clear && npm run build && rm -rf var/data.db && clear && ./bin/cron && crontab -r
+     clear && crontab -r && npm run build && rm -rf var/data.db &&  ./bin/cron
    ;;
 *)
   if [[ ! "$1" ]]; then
