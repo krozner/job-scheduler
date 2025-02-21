@@ -1,4 +1,4 @@
 export enum JobStatusDto {
-    enable = 'enable',
-    disable = 'disable',
+    inProgress = 'inProgress',
+    finished = 'finished',
 }

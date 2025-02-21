@@ -11,14 +11,13 @@ import {
     ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { JobSchedulerService } from '../services/job-scheduler.service';
-import { JobDto } from '../dto/job.dto';
+import { JobAvailabilityDto, JobDto, JobStatusDto } from '../dto';
 import { JobRepository } from '../services/job.repository';
 import { Paginator } from '../utils/paginator';
 import { JobEntity } from '../entities/job.entity';
 import { Request } from 'express';
 import { cronbee } from 'cronbee';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { JobStatusDto } from '../dto/job-status.dto';
 import { ListView } from './views/list.view';
 
 @Controller()
@@ -52,12 +51,12 @@ export class JobController {
         };
     }
 
-    @ApiOperation({ summary: 'Change Job status. (Disable or Enable)' })
-    @ApiParam({ name: 'status', enum: JobStatusDto })
-    @Patch('/jobs/:id/:status')
+    @ApiOperation({ summary: 'Change Job availability. (Disable or Enable)' })
+    @ApiParam({ name: 'availability', enum: JobAvailabilityDto })
+    @Patch('/jobs/:id/:availability')
     @HttpCode(204)
-    async changeStatus(@Param('id') id: number, @Param('status') status: number) {
-        const job = await this.jobRepository.toggleStatus(id, { [status]: true });
+    async changeAvailability(@Param('id') id: number, @Param('availability') availability: JobAvailabilityDto) {
+        const job = await this.jobRepository.toggleStatus(id, { [availability]: true });
         if (job instanceof JobEntity) {
             job.isEnabled ? await this.jobScheduler.startJob(job) : await this.jobScheduler.stopJob(job);
         }
@@ -65,11 +64,18 @@ export class JobController {
 
     @ApiOperation({ summary: 'List of jobs execution (finished & in progress)' })
     @ApiResponse({ type: ListView })
+    @ApiParam({
+        name: 'status',
+        enum: JobStatusDto,
+        allowEmptyValue: true,
+        required: false,
+        description: 'Without `status` parameter endpoint returns all jobs',
+    })
     @UseInterceptors(ClassSerializerInterceptor)
-    @Get('/jobs/executions')
-    async executions(@Req() request: Request) {
+    @Get(['/jobs/executions', '/jobs/executions/:status'])
+    async executions(@Req() request: Request, @Param('status') status?: JobStatusDto) {
         const paginator = new Paginator<JobEntity>(request);
-        const collection = await this.jobRepository.findExecutions(paginator);
+        const collection = await this.jobRepository.findExecutions(paginator, { status });
 
         return {
             pages: paginator.pages,

@@ -15,7 +15,7 @@ import { JobExecutionEntity } from './entities/job-execution.entity';
             entities: [JobEntity, JobExecutionEntity],
             synchronize: true,
             autoLoadEntities: true,
-            logging: false,
+            logging: !!process.env.TYPEORM_LOGGING,
         }),
     ],
     controllers: [JobController],

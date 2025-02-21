@@ -3,12 +3,14 @@ import { EntityManager } from 'typeorm';
 import { JobEntity } from '../entities/job.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { JobDto } from '../dto/job.dto';
-import { JobStatusDto } from '../dto/job-status.dto';
+import { JobAvailabilityDto } from '../dto/job-availability.dto';
 import { Paginator } from '../utils/paginator';
 import { JobExecutionEntity } from '../entities/job-execution.entity';
+import { JobStatusDto } from '../dto';
+import { JobStatus } from '../entities/job.status';
 
-type IJobStatusUpdate  = {
-    [key in JobStatusDto]?: boolean;
+type IJobStatusUpdate = {
+    [key in JobAvailabilityDto]?: boolean;
 };
 
 @Injectable()
@@ -59,21 +61,33 @@ export class JobRepository {
         return null;
     }
 
-    async findExecutions(paginator: Paginator<JobEntity>): Promise<JobEntity[]> {
+    async findExecutions(paginator: Paginator<JobEntity>, options?: { status: JobStatusDto }): Promise<JobStatus[]> {
         const total = await this.entityManager
             .getRepository(JobEntity)
-            .createQueryBuilder('j')
-            .leftJoinAndSelect(JobExecutionEntity, 'e')
+            .createQueryBuilder()
             .getCount();
-        paginator.setTotal(total);
 
-        return this.entityManager.getRepository(JobEntity).find({
-            skip: paginator.offset,
-            take: paginator.limit,
-            order: paginator.orderBy,
-            relations: {
-                executions: true,
-            },
-        });
+        paginator
+            .setAlias('j') // sorts by job.id, @see query builder below
+            .setTotal(total);
+
+        const ids = await this.entityManager
+            .createQueryBuilder()
+            .select('e.id')
+            .from('(SELECT e.* FROM job_execution e ORDER BY e.id DESC)', 'e')
+            .groupBy('e.jobId')
+            .offset(paginator.offset)
+            .limit(paginator.limit)
+            .getRawMany();
+
+        const collection = await this.entityManager
+            .getRepository(JobExecutionEntity)
+            .createQueryBuilder('e')
+            .leftJoinAndMapOne('e.job', JobEntity, 'j', 'e.jobId = j.id')
+            .where('e.id IN (:...id)', { id: ids.map(({ id }) => id) })
+            .orderBy(paginator.orderBy) // sorted by job.id DESC
+            .getMany();
+
+        return collection.map((execution) => new JobStatus(execution));
     }
 }
