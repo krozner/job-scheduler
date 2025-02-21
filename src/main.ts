@@ -3,37 +3,44 @@ import { JobModule } from './job.module';
 import { setEnVars } from './utils/envars';
 import { ValidationPipe } from '@nestjs/common';
 import * as process from 'process';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 let server: { close: (arg0: (err: any) => void) => void };
 
 async function bootstrap() {
-  await setEnVars('/usr/src/app/.env');
-  const port = process.env.PORT || 3000;
+    await setEnVars('/usr/src/app/.env');
+    const port = process.env.PORT || 3000;
 
-  const app = await NestFactory.create(JobModule);
-  app.useGlobalPipes(new ValidationPipe());
-  server = await app.listen(port);
+    const app = await NestFactory.create(JobModule);
+    app.useGlobalPipes(new ValidationPipe());
 
-  console.log('Application has started on ' + port);
+    const config = new DocumentBuilder()
+        .setTitle('Job Scheduler')
+        .setVersion('1.0')
+        .build();
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api-doc', app, documentFactory);
 
-  // Handle process kill signals
-  process.on('SIGINT', shutdown);
-  process.on('SIGTERM', shutdown);
+    server = await app.listen(port);
+
+    console.log('Application has started on ' + port);
+
+    // Handle process kill signals
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
 }
 
 function shutdown() {
-  // Gracefully close outstanding HTTP connections
-  server.close((err) => {
-    if (err) {
-      console.error(
-        'An error occurred while closing the server. Forecefullly shutting down',
-      );
-      console.error(err);
-      process.exit(1);
-    }
-    console.log('Http server closed.');
-    process.exit(0);
-  });
+    // Gracefully close outstanding HTTP connections
+    server.close((err) => {
+        if (err) {
+            console.error('An error occurred while closing the server. Forecefullly shutting down');
+            console.error(err);
+            process.exit(1);
+        }
+        console.log('Http server closed.');
+        process.exit(0);
+    });
 }
 
 bootstrap();
