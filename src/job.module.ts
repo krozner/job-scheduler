@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { JobController } from './job.controller';
-import { JobSchedulerService } from './job-scheduler.service';
+import { JobController } from './controllers/job.controller';
+import { JobSchedulerService } from './services/job-scheduler.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobEntity } from './entities/job.entity';
-import { JobRepository } from './job.repository';
+import { JobRepository } from './services/job.repository';
+import { JobExecutionEntity } from './entities/job-execution.entity';
 
 @Module({
     imports: [
@@ -11,9 +12,10 @@ import { JobRepository } from './job.repository';
         TypeOrmModule.forRoot({
             type: 'sqlite',
             database: 'var/data.db',
-            entities: [JobEntity],
+            entities: [JobEntity, JobExecutionEntity],
             synchronize: true,
             autoLoadEntities: true,
+            logging: false,
         }),
     ],
     controllers: [JobController],

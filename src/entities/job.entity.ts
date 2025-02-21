@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { JobExecutionEntity } from './job-execution.entity';
+import { Exclude } from 'class-transformer';
 
 export interface IJobEnvVariable {
     name: string;
@@ -13,9 +15,11 @@ export class JobEntity {
     @Column()
     name: string;
 
+    @Exclude()
     @Column()
     cron: string;
 
+    @Exclude()
     @Column({ name: 'envVariables', nullable: true })
     private envVariablesSerialized?: string; // sqlite doesn't allow to store array so value for env variables is serialized to json
 
@@ -39,4 +43,7 @@ export class JobEntity {
     get identity(): string {
         return 'Job_' + this.id;
     }
+
+    @OneToMany(() => JobExecutionEntity, (execution) => execution.job)
+    executions: JobExecutionEntity[];
 }
