@@ -3,11 +3,14 @@ import { IPages } from '../../utils/paginator';
 
 export class PagesView implements IPages {
     @ApiProperty()
-    total: number;
+    totalItems: number;
+
+    @ApiProperty()
+    pagesCount: number;
 
     @ApiProperty({ required: false })
     nextPage?: number;
 
     @ApiProperty({ required: false })
-    prefPage?: number;
+    prevPage?: number;
 }
