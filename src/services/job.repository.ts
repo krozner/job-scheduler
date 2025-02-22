@@ -63,9 +63,16 @@ export class JobRepository {
 
     async findExecutions(paginator: Paginator<JobEntity>, options?: { status: JobStatusDto }): Promise<JobStatus[]> {
         const total = await this.entityManager
-            .getRepository(JobEntity)
-            .createQueryBuilder()
+            .getRepository(JobExecutionEntity)
+            .createQueryBuilder('e')
+            .groupBy('e.jobId')
             .getCount();
+
+        this.entityManager
+            .createQueryBuilder()
+            .select('e.id')
+            .from('(SELECT e.* FROM job_execution e ORDER BY e.id DESC)', 'e')
+            .groupBy('e.jobId');
 
         paginator
             .setAlias('j') // sorts by job.id, @see query builder below
