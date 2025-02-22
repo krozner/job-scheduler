@@ -20,9 +20,14 @@ export class JobStatus extends JobEntity {
     @Exclude()
     private readonly exclusion: JobExecutionEntity;
 
-    constructor(exclusion: JobExecutionEntity) {
+    @ApiProperty()
+    @Expose()
+    executionCount: number;
+
+    constructor(exclusion: JobExecutionEntity, total: { count: number }) {
         super();
         this.exclusion = exclusion;
+        this.executionCount = total?.count;
 
         plainToClassFromExist(this, exclusion.job);
     }
