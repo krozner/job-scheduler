@@ -12,7 +12,6 @@ Ensure also that [Docker is installed](https://docs.docker.com/engine/install) o
 # development
 $ docker-compose up -d
 $ docker exec -it job-scheduler bash
-$ npm i
 $ npm run start:dev
 ```
 ## Testing

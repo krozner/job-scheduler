@@ -2,9 +2,13 @@ FROM node:22-slim
 
 USER root
 
+# Set the default working directory for the app
+# It is a best practice to use the /usr/src/app directory
+WORKDIR /usr/src/app
+
 # Install cron
 RUN apt update && apt -y install cron
-# Create the log file
+# Create the log file fo all job commands output
 RUN touch /var/log/cron.log
 # Run the commands on container startup
 CMD cron && tail -f /var/log/cron.log
@@ -20,31 +24,21 @@ ENV NODE_ENV=dev \
 # Create the working directory, including the node_modules folder for the sake of assigning ownership in the next commands
 RUN mkdir -p /usr/src/app/node_modules
 
-# Change ownership of the working directory to the node:node user:group
-# This ensures that npm install can be executed successfully with the correct permissions
-RUN chown -R node:node /usr/src/app
-
-# Set the user to use when running this image
-# Non previlage mode for better security (this user comes with official NodeJS image).
-
-# Set the default working directory for the app
-# It is a best practice to use the /usr/src/app directory
-WORKDIR /usr/src/app
-
-# Copy package.json, package-lock.json
-# Copying this separately prevents re-running npm install on every code change.
-COPY --chown=node:node package*.json ./
 
 # Install dependencies.
+COPY package*.json ./
+RUN npm i
 #RUN npm i -g @nestjs/cli
 #RUN npm ci --only=production
 
 # Necessary to run before adding application code to leverage Docker cache
 RUN npm cache clean --force
-# RUN mv node_modules ../
 
-# Bundle app source
-COPY --chown=node:node . ./
+RUN mkdir /usr/src/app/var
+RUN touch /usr/src/app/var/stdout.log
+RUN touch /usr/src/app/var/stderr.log
+RUN ln -sf /dev/stdout /usr/src/app/var/stdout.log \
+    && ln -sf /dev/stderr /usr/src/app/var/stderr.log
 
 # Expose API port
 EXPOSE 3000
