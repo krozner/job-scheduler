@@ -18,7 +18,7 @@ import { JobEntity } from '../entities/job.entity';
 import { Request } from 'express';
 import { cronbee } from 'cronbee';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { ListView } from './views/list.view';
+import { ListView, JobListView, JobExecutionListView } from './views';
 
 @Controller()
 export class JobController {
@@ -38,7 +38,7 @@ export class JobController {
     }
 
     @ApiOperation({ summary: 'List of jobs' })
-    @ApiResponse({ type: ListView })
+    @ApiResponse({ type: JobListView })
     @UseInterceptors(ClassSerializerInterceptor)
     @Get('/jobs')
     async fetch(@Req() request: Request) {
@@ -63,7 +63,7 @@ export class JobController {
     }
 
     @ApiOperation({ summary: 'List of jobs execution (finished & in progress)' })
-    @ApiResponse({ type: ListView })
+    @ApiResponse({ type: JobExecutionListView })
     @ApiParam({
         name: 'status',
         enum: JobStatusDto,
